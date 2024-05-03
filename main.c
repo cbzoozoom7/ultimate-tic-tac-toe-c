@@ -28,4 +28,5 @@ int main(void) {
 		int inputBoard = getInput(prompt);
 		gameOver = 1;
 	}
+	return 0;
 }
