@@ -1,7 +1,7 @@
 //main.c
 //ultimate-tic-tac-toe-c
-//Copyright Christopher Bowman 2024
-//Created Fri 3 May 2024
+//copyright Christopher Bowman 2024
+//created Fri 3 May 2024
 #include "main.h"
 int main(void) {
 	char board[BOARD_SIZE][BOARD_SIZE][BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]; // Think of them like nested 2D arrays, not a 4D array.
@@ -23,7 +23,9 @@ int main(void) {
 		printf("4|5|6\n");
 		printf("-+-+-\n");
 		printf("7|8|9\n");
-		printf("Player %s, which board would you like to play in? ", playerSymbols[currentPlayer]);
+		char prompt[PROMPT_LENGTH];
+		snprintf(prompt, PROMPT_LENGTH, "Player %s, which board would you like to play in?", playerSymbols[currentPlayer]);
+		int inputBoard = getInput(prompt);
 		gameOver = 1;
 	}
 }
