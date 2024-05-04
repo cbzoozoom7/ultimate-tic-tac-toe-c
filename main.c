@@ -25,12 +25,23 @@ int main(void) {
 		printf("7|8|9\n");
 		char prompt[PROMPT_LENGTH];
 		snprintf(prompt, PROMPT_LENGTH, "Player %s, which board would you like to play in?", playerSymbols[currentPlayer]);
-		int inputBoard = getInput(prompt);
-		while (isSmallBoardFull(board[(inputBoard-1) / BOARD_SIZE][(inputBoard-1) % BOARD_SIZE])) {
-			printf("Invalid choice. Board %d is already full or won.\n", inputBoard);
-			inputBoard = getInput(prompt);
+		int inputBoardRow, inputBoardCol;
+		int inputBoard = getInput(prompt, &inputBoardRow, &inputBoardCol);
+		while (isSmallBoardFull(board[inputBoardRow][inputBoardCol])) {
+			printf("Invalid choice; board %d is already full or won.\n", inputBoard);
+			inputBoard = getInput(prompt, &inputBoardRow, &inputBoardCol);
 		}
-		gameOver = 1;
+		snprintf(prompt, PROMPT_LENGTH, "Player %s, which cell in board %d would you like to mark?", playerSymbols[currentPlayer], inputBoard);
+		int inputCellRow, inputCellCol;
+		int inputCell = getInput(prompt, &inputCellRow, &inputCellCol);
+		while (strcmp(board[inputBoardRow][inputBoardCol][inputCellRow][inputCellCol], " ") != 0) {
+			printf("Invaild choice; board %d, cell %d is already marked.\n", inputBoard, inputCell);
+			inputCell = getInput(prompt, &inputCellRow, &inputCellCol);
+		}
+		strcpy(board[inputBoardRow][inputBoardCol][inputCellRow][inputCellCol], playerSymbols[currentPlayer]);
+		// TODO: Print board
+		currentPlayer = !currentPlayer;
+		gameOver = 1; // TODO: Check for wins
 	}
 	return 0;
 }

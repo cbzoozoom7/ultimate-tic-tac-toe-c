@@ -3,7 +3,7 @@
 // copyright Christopher Bowman 2024
 // created Fri 3 May 2024
 #include "functions.h"
-int getInput(const char *prompt) {
+int getInput(const char *prompt, int *row, int *col) {
 	int input = -1;
 	char isBadInput = 1; // bool
 	while (isBadInput) {
@@ -15,6 +15,8 @@ int getInput(const char *prompt) {
 			isBadInput = 0;
 		}
 	}
+	*row = (input-1) / BOARD_SIZE;
+	*col = (input-1) % BOARD_SIZE;
 	return input;
 }
 char isSmallBoardFull(char smallBoard[BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]) {
