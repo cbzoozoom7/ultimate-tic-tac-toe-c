@@ -5,5 +5,9 @@
 #ifndef FUNCTIONS_H
 	#define FUNCTIONS_H
 	#include <stdio.h>
+	#include <string.h>
+	#include "defs.h"
 	int getInput(const char *);
+	char isSmallBoardFull(char [BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]);
+	
 #endif

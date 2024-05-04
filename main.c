@@ -12,7 +12,7 @@ int main(void) {
 		for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
 				for (int smallCol = 0; smallCol < BOARD_SIZE; smallCol++) {
-					strcpy(board[bigRow][bigCol][smallRow][smallCol], " ");
+					strcpy(board[bigRow][bigCol][smallRow][smallCol], "X");
 				}
 			}
 		}
@@ -26,6 +26,10 @@ int main(void) {
 		char prompt[PROMPT_LENGTH];
 		snprintf(prompt, PROMPT_LENGTH, "Player %s, which board would you like to play in?", playerSymbols[currentPlayer]);
 		int inputBoard = getInput(prompt);
+		while (isSmallBoardFull(board[(inputBoard-1) / BOARD_SIZE][(inputBoard-1) % BOARD_SIZE])) {
+			printf("Invalid choice. Board %d is already full or won.\n", inputBoard);
+			inputBoard = getInput(prompt);
+		}
 		gameOver = 1;
 	}
 	return 0;

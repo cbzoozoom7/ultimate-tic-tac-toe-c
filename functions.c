@@ -17,3 +17,19 @@ int getInput(const char *prompt) {
 	}
 	return input;
 }
+char isSmallBoardFull(char smallBoard[BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]) {
+	char isFull = 1;
+	int row = 0;
+	while (row < BOARD_SIZE && isFull) {
+		int col = 0;
+		while (col < BOARD_SIZE && isFull) {
+			isFull = strcmp((smallBoard[row][col]), " ");
+			col++;
+		}
+		row++;
+	}
+	if (isFull) {
+		isFull = 1;
+	}
+	return isFull;
+}
