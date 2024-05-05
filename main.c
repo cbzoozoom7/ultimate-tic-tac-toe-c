@@ -12,7 +12,7 @@ int main(void) {
 		for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
 				for (int smallCol = 0; smallCol < BOARD_SIZE; smallCol++) {
-					strcpy(board[bigRow][bigCol][smallRow][smallCol], "X");
+					strcpy(board[bigRow][bigCol][smallRow][smallCol], " ");
 				}
 			}
 		}
@@ -35,11 +35,36 @@ int main(void) {
 		int inputCellRow, inputCellCol;
 		int inputCell = getInput(prompt, &inputCellRow, &inputCellCol);
 		while (strcmp(board[inputBoardRow][inputBoardCol][inputCellRow][inputCellCol], " ") != 0) {
-			printf("Invaild choice; board %d, cell %d is already marked.\n", inputBoard, inputCell);
+			printf("Invalid choice; board %d, cell %d is already marked.\n", inputBoard, inputCell);
 			inputCell = getInput(prompt, &inputCellRow, &inputCellCol);
 		}
 		strcpy(board[inputBoardRow][inputBoardCol][inputCellRow][inputCellCol], playerSymbols[currentPlayer]);
-		// TODO: Print board
+		for (int bigRow = 0; bigRow < BOARD_SIZE; bigRow++) { // print the board
+			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
+				for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
+					for (int smallCol = 0; smallCol < BOARD_SIZE; smallCol++) {
+						printf("%s", board[bigRow][bigCol][smallRow][smallCol]);
+						if (smallCol < BOARD_SIZE - 1) { // no separator after the last space
+							printf("|");
+						}
+					}
+					if (bigCol < BOARD_SIZE - 1) {
+						printf(" || "); // big column separator
+					} else {
+						printf("\n");
+					}
+				}
+				if (smallRow < BOARD_SIZE - 1) {
+					printf("-+-+- || -+-+- || -+-+-\n"); // small row separator
+				}
+			}
+			if (bigRow < BOARD_SIZE - 1) {
+				printf("      ||       ||      \n");
+				printf("------++-------++------\n"); // big row separator
+				printf("------++-------++------\n"); // TODO: programmatically generate separators??
+				printf("      ||       ||      \n");
+			}
+		}
 		currentPlayer = !currentPlayer;
 		gameOver = 1; // TODO: Check for wins
 	}
