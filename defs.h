@@ -11,5 +11,7 @@
 		int row;
 		int col;
 	} BoardLocation;
-	
+	typedef char cell[CELL_LENGTH];
+	typedef cell subboard[BOARD_SIZE][BOARD_SIZE];
+
 #endif

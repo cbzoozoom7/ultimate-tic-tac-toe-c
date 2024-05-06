@@ -17,6 +17,7 @@ int main(void) {
 			}
 		}
 	}
+	BoardLocation *subboardLoc = NULL;
 	while (!gameOver) {
 		printf("1|2|3\n");
 		printf("-+-+-\n");
@@ -24,21 +25,23 @@ int main(void) {
 		printf("-+-+-\n");
 		printf("7|8|9\n");
 		char prompt[PROMPT_LENGTH];
-		snprintf(prompt, PROMPT_LENGTH, "Player %s, which board would you like to play in?", playerSymbols[currentPlayer]);
-		BoardLocation *userBoard = malloc(sizeof(BoardLocation));
-		getInput(prompt, userBoard);
-		while (isSmallBoardFull(board[userBoard->row][userBoard->col])) {
-			printf("Invalid choice; board %c is already full or won.\n", userBoard->name);
-			getInput(prompt, userBoard);
+		if (!subboardLoc) {
+			snprintf(prompt, PROMPT_LENGTH, "Player %s, which subboard would you like to play in?", playerSymbols[currentPlayer]);
+			subboardLoc = malloc(sizeof(BoardLocation));
+			getInput(prompt, subboardLoc);
+			while (isSubboardFull(getSubboard(board, subboardLoc))) {
+				printf("Invalid choice; board %c is already full or won.\n", subboardLoc->name);
+				getInput(prompt, subboardLoc);
+			}
 		}
-		snprintf(prompt, PROMPT_LENGTH, "Player %s, which cell in board %c would you like to mark?", playerSymbols[currentPlayer], userBoard->name);
-		BoardLocation *userCell = malloc(sizeof(BoardLocation));
-		getInput(prompt, userCell);
-		while (strcmp(board[userBoard->row][userBoard->col][userCell->row][userCell->col], " ") != 0) {
-			printf("Invalid choice; board %c, cell %c is already marked.\n", userBoard->name, userBoard->name);
-			getInput(prompt, userCell);
+		snprintf(prompt, PROMPT_LENGTH, "Player %s, which cell in board %c would you like to mark?", playerSymbols[currentPlayer], subboardLoc->name);
+		BoardLocation *cellLoc = malloc(sizeof(BoardLocation));
+		getInput(prompt, cellLoc);
+		while (strcmp(getCell(board, subboardLoc, cellLoc), " ") != 0) {
+			printf("Invalid choice; subboard %c, cell %c is already marked.\n", subboardLoc->name, cellLoc->name);
+			getInput(prompt, cellLoc);
 		}
-		strcpy(board[userBoard->row][userBoard->col][userCell->row][userCell->col], playerSymbols[currentPlayer]);
+		strcpy(getCell(board, subboardLoc, cellLoc), playerSymbols[currentPlayer]);
 		for (int bigRow = 0; bigRow < BOARD_SIZE; bigRow++) { // print the board
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
 				for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
@@ -67,8 +70,9 @@ int main(void) {
 		}
 		gameOver = currentPlayer; // TODO: Check for wins
 		currentPlayer = !currentPlayer;
-		free(userBoard);
-		free(userCell);
+
+		free(subboardLoc);
+		free(cellLoc);
 	}
 	return 0;
 }
