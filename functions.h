@@ -7,7 +7,7 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "defs.h"
-	int getInput(const char *, int *, int *);
+	void getInput(const char *, BoardLocation *);
 	char isSmallBoardFull(char [BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]);
 
 #endif

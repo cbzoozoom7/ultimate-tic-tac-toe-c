@@ -3,21 +3,21 @@
 // copyright Christopher Bowman 2024
 // created Fri 3 May 2024
 #include "functions.h"
-int getInput(const char *prompt, int *row, int *col) {
-	int input = -1;
+void getInput(const char *prompt, BoardLocation *loc) {
+	loc->name = -1;
 	char isBadInput = 1; // bool
 	while (isBadInput) {
 		printf("%s ", prompt);
-		scanf("%d", &input);
-		if (input > 9 || input < 1) {
+		loc->name = getc(stdin);
+		while (getc(stdin) != '\n') {}
+		if (loc->name > '9' || loc->name < '1') {
 			printf("Invalid input. Please enter a number 1–9.\n");
 		} else {
 			isBadInput = 0;
 		}
 	}
-	*row = (input-1) / BOARD_SIZE;
-	*col = (input-1) % BOARD_SIZE;
-	return input;
+	loc->row = (loc->name - '0' - 1) / BOARD_SIZE;
+	loc->col = (loc->name - '0' - 1) % BOARD_SIZE;
 }
 char isSmallBoardFull(char smallBoard[BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]) {
 	char isFull = 1;
