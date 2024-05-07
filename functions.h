@@ -8,6 +8,6 @@
 	#include <string.h>
 	#include "defs.h"
 	void getInput(const char *, BoardLocation *);
-	char isSubboardFull(const char [BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]);
+	char isSubboardFull(const int [BOARD_SIZE][BOARD_SIZE]);
 
 #endif

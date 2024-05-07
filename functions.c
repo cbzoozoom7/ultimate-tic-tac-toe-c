@@ -21,19 +21,16 @@ void getInput(const char *prompt, BoardLocation *loc) { // prompts the user with
 	loc->row = (loc->name - '0' - 1) / BOARD_SIZE;
 	loc->col = (loc->name - '0' - 1) % BOARD_SIZE;
 }
-char isSubboardFull(const char subboard[BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]) { // returns bool
+char isSubboardFull(const int subboard[BOARD_SIZE][BOARD_SIZE]) { // returns bool
 	char isFull = 1;
 	int row = 0;
 	while (row < BOARD_SIZE && isFull) {
 		int col = 0;
 		while (col < BOARD_SIZE && isFull) {
-			isFull = strcmp(subboard[row][col], " ");
+			isFull = subboard[row][col] != NUM_PLAYERS;
 			col++;
 		}
 		row++;
-	}
-	if (isFull) {
-		isFull = 1;
 	}
 	return isFull;
 }

@@ -4,15 +4,15 @@
 //created Fri 3 May 2024
 #include "main.h"
 int main(void) {
-	char board[BOARD_SIZE][BOARD_SIZE][BOARD_SIZE][BOARD_SIZE][CELL_LENGTH]; // Think of them like nested 2D arrays, not a 4D array.
-	char playerSymbols[][CELL_LENGTH] = {"\x1b[31mX\x1b[0m", "\x1b[33mO\x1b[0m"}; // {"X" in red, "O" in blue}
+	int board[BOARD_SIZE][BOARD_SIZE][BOARD_SIZE][BOARD_SIZE]; // Think of them like nested 2D arrays, not a 4D array.
+	char playerSymbols[][CELL_LENGTH] = {"\x1b[31mX\x1b[0m", "\x1b[33mO\x1b[0m", " "}; // {"X" in red, "O" in blue, " "}
 	int currentPlayer = 0; // bool used as index for playerSymbols
 	char gameOver = 0; // bool used to end the game
 	for (int bigRow = 0; bigRow < BOARD_SIZE; bigRow++) { // Initialize the game board with spaces
 		for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
 				for (int smallCol = 0; smallCol < BOARD_SIZE; smallCol++) {
-					strcpy(board[bigRow][bigCol][smallRow][smallCol], " ");
+					board[bigRow][bigCol][smallRow][smallCol] = NUM_PLAYERS; // playerSymbols is used as a lookup table to print out the board. playerSymbols[NUM_PLAYERS] = " ", representing an empty space
 				}
 			}
 		}
@@ -37,16 +37,16 @@ int main(void) {
 		snprintf(prompt, PROMPT_LENGTH, "Player %s, which cell in sub-board %c would you like to mark?", playerSymbols[currentPlayer], subboardLoc.name);
 		BoardLocation cellLoc;
 		getInput(prompt, &cellLoc);
-		while (strcmp(board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col], " ") != 0) {
+		while (board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col] != 2) {
 			printf("Invalid choice; sub-board %c, cell %c is already marked.\n", subboardLoc.name, cellLoc.name);
 			getInput(prompt, &cellLoc);
 		}
-		strcpy(board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col], playerSymbols[currentPlayer]);
+		board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col] = currentPlayer;
 		for (int bigRow = 0; bigRow < BOARD_SIZE; bigRow++) { // print the board
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
 				for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
 					for (int smallCol = 0; smallCol < BOARD_SIZE; smallCol++) {
-						printf("%s", board[bigRow][bigCol][smallRow][smallCol]);
+						printf("%s", playerSymbols[board[bigRow][bigCol][smallRow][smallCol]]);
 						if (smallCol < BOARD_SIZE - 1) { // no separator after the last space
 							printf("|");
 						}
