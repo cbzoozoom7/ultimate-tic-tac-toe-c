@@ -5,8 +5,8 @@
 a.out: main.o functions.o
 	gcc main.o functions.o
 main.o: main.c main.h defs.h
-	gcc -c -Wall main.c
+	gcc -c -Wall -Werror main.c
 functions.o: functions.c functions.h defs.h
-	gcc -c -Wall functions.c
+	gcc -c -Wall -Werror functions.c
 clean:
 	rm main.o functions.o
