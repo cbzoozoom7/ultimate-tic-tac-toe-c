@@ -12,6 +12,6 @@
 		int row;
 		int col;
 	} BoardLocation;
-	typedef int Subboard[BOARD_SIZE][BOARD_SIZE];
+	typedef signed char Subboard[BOARD_SIZE][BOARD_SIZE];
 
 #endif

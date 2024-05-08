@@ -21,7 +21,7 @@ void getInput(const char *prompt, BoardLocation *loc) { // prompts the user with
 	loc->row = (loc->name - '0' - 1) / BOARD_SIZE;
 	loc->col = (loc->name - '0' - 1) % BOARD_SIZE;
 }
-char isSubboardFull(const int subboard[BOARD_SIZE][BOARD_SIZE]) { // returns bool
+char isSubboardFull(const Subboard subboard) { // returns bool
 	char isFull = 1;
 	int row = 0;
 	while (row < BOARD_SIZE && isFull) {
