@@ -4,10 +4,13 @@
 //created Fri 3 May 2024
 #include "main.h"
 int main(void) {
+	//TODO: switch board, currentPlayer, Subboard to signed char type
 	int board[BOARD_SIZE][BOARD_SIZE][BOARD_SIZE][BOARD_SIZE]; // Think of them like nested 2D arrays, not a 4D array.
+	Subboard wins; // represents sub-boards that have been won. This makes it much easier to determine if the game is over
 	char playerSymbols[][CELL_LENGTH] = {"\x1b[31mX\x1b[0m", "\x1b[33mO\x1b[0m", " "}; // {"X" in red, "O" in blue, " "}
 	int currentPlayer = 0; // bool used as index for playerSymbols
 	char gameOver = 0; // bool used to end the game
+	//TODO: track the number of moves made & use that to detect a stalemate by comparing it to the number of spaces on the board.
 	for (int bigRow = 0; bigRow < BOARD_SIZE; bigRow++) { // Initialize the game board with spaces
 		for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
@@ -42,6 +45,12 @@ int main(void) {
 			getInput(prompt, &cellLoc);
 		}
 		board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col] = currentPlayer;
+		switch (checkWin(board[subboardLoc.row][subboardLoc.col], &cellLoc, wins, &subboardLoc)) {
+			case 2:
+				gameOver = 1;
+			case 1: // intentional spillover
+				printf("Player %s wins sub-board %c.\n", playerSymbols[currentPlayer], subboardLoc.name);
+		}
 		for (int bigRow = 0; bigRow < BOARD_SIZE; bigRow++) { // print the board
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
 				for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
@@ -68,12 +77,15 @@ int main(void) {
 				printf("      ||       ||      \n");
 			}
 		}
-		gameOver = currentPlayer; // TODO: Check for wins
-		currentPlayer = !currentPlayer;
-		if (!isSubboardFull(board[cellLoc.row][cellLoc.col])) {
-			subboardLoc = cellLoc;
+		if (gameOver) {
+			printf("Player %s wins!\n", playerSymbols[currentPlayer]);
 		} else {
-			subboardLoc.name = 0;
+			currentPlayer = !currentPlayer;
+			if (!isSubboardFull(board[cellLoc.row][cellLoc.col])) {
+				subboardLoc = cellLoc;
+			} else {
+				subboardLoc.name = 0;
+			}
 		}
 	}
 	return 0;

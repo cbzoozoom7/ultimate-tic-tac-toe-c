@@ -9,5 +9,6 @@
 	#include "defs.h"
 	void getInput(const char *, BoardLocation *);
 	char isSubboardFull(const int [BOARD_SIZE][BOARD_SIZE]);
+	char checkWin(Subboard, const BoardLocation *, Subboard, const BoardLocation *); // == 0 when the player did not win the subboard, 1 when the player did, & 2 when the player won the game.
 
 #endif
