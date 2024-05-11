@@ -9,7 +9,6 @@ int main(void) {
 	char playerSymbols[][CELL_LENGTH] = {"\x1b[31mX\x1b[0m", "\x1b[33mO\x1b[0m", " "}; // {"X" in red, "O" in blue, " "}
 	signed char currentPlayer = 0; // bool used as index for playerSymbols
 	char gameOver = 0; // bool used to end the game
-	//TODO: track the number of moves made & use that to detect a stalemate by comparing it to the number of spaces on the board.
 	for (int bigRow = 0; bigRow < BOARD_SIZE; bigRow++) { // Initialize the game board with spaces
 		for (int bigCol = 0; bigCol < BOARD_SIZE; bigCol++) {
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
@@ -78,6 +77,9 @@ int main(void) {
 		}
 		if (gameOver) {
 			printf("Player %s wins!\n", playerSymbols[currentPlayer]);
+		} else if (checkStalemate(board, wins, &subboardLoc)) {
+			gameOver = 1;
+			printf("Stalemate! All spaces on the board have been filled, but nobody won.\n");
 		} else {
 			currentPlayer = !currentPlayer;
 			if (!isSubboardFull(board[cellLoc.row][cellLoc.col])) {

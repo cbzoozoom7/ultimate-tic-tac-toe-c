@@ -71,3 +71,23 @@ char checkWin(Subboard s, const BoardLocation *cell, Subboard overall, const Boa
 	}
 	return win;
 }
+char checkStalemate(const Subboard board[BOARD_SIZE][BOARD_SIZE], Subboard overall, const BoardLocation *subboard) {
+	char stalemate = isSubboardFull(board[subboard->row][subboard->col]); // bool
+	if (stalemate) {
+		if (overall[subboard->row][subboard->col] == BOARD_SIZE - 1) { // if that sub-board is marked empty... (This check is used to avoid overwriting a win on the overall board)
+			overall[subboard->row][subboard->col] = -1; // mark that sub-board full
+		}
+		int row = 0;
+		while (stalemate && row < BOARD_SIZE) {
+			int col = 0;
+			while (stalemate && col < BOARD_SIZE) {
+				if (overall[row][col] == BOARD_SIZE - 1) { // check for empty space in overall board
+					stalemate = 0;
+				}
+				col++;
+			}
+			row++;
+		}
+	}
+	return stalemate;
+}
