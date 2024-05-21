@@ -7,9 +7,10 @@
 	#include <stdio.h>
 	#include <string.h>
 	#include "defs.h"
-	void getInput(const char *, BoardLocation *);
+	char getInput(const char *, BoardLocation *);
 	char isSubboardFull(const Subboard);
 	char checkWin(Subboard, const BoardLocation *, Subboard, const BoardLocation *); // == 0 when the player did not win the subboard, 1 when the player did, & 2 when the player won the game.
 	char checkStalemate(const Subboard [BOARD_SIZE][BOARD_SIZE], Subboard, const BoardLocation *);
+	void initGameState(GameState *);
 
 #endif

@@ -16,11 +16,18 @@ int main(void) {
 					board[bigRow][bigCol][smallRow][smallCol] = NUM_PLAYERS; // playerSymbols is used as a lookup table to print out the board. playerSymbols[NUM_PLAYERS] = " ", representing an empty space
 				}
 			}
+			wins[bigRow][bigCol] = NUM_PLAYERS;
 		}
+	}
+	GameState backup[NUM_PLAYERS]; // used to restore the previous state of the board
+	for (int player = 0; player < NUM_PLAYERS; player++) {
+		initGameState(&(backup[currentPlayer]));
 	}
 	BoardLocation subboardLoc;
 	subboardLoc.name = 0;
 	while (!gameOver) {
+		BoardLocation cellLoc;
+		UndoStatus undoState = NORMAL;
 		printf("1|2|3\n");
 		printf("-+-+-\n");
 		printf("4|5|6\n");
@@ -28,26 +35,41 @@ int main(void) {
 		printf("7|8|9\n");
 		char prompt[PROMPT_LENGTH];
 		if (subboardLoc.name == 0) {
+			backup[currentPlayer].didChooseSubboard = 1;
 			snprintf(prompt, PROMPT_LENGTH, "Player %s, which sub-board would you like to play in?", playerSymbols[currentPlayer]);
-			getInput(prompt, &subboardLoc);
-			while (isSubboardFull(board[subboardLoc.row][subboardLoc.col])) {
+			undoState = getInput(prompt, &subboardLoc);
+			while (isSubboardFull(board[subboardLoc.row][subboardLoc.col]) && undoState == NORMAL) {
 				printf("Invalid choice; sub-board %c is already full or won.\n", subboardLoc.name);
-				getInput(prompt, &subboardLoc);
+				undoState = getInput(prompt, &subboardLoc);
 			}
 		}
-		snprintf(prompt, PROMPT_LENGTH, "Player %s, which cell in sub-board %c would you like to mark?", playerSymbols[currentPlayer], subboardLoc.name);
-		BoardLocation cellLoc;
-		getInput(prompt, &cellLoc);
-		while (board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col] != 2) {
-			printf("Invalid choice; sub-board %c, cell %c is already marked.\n", subboardLoc.name, cellLoc.name);
-			getInput(prompt, &cellLoc);
+		if (undoState == NORMAL) {
+			snprintf(prompt, PROMPT_LENGTH, "Player %s, which cell in sub-board %c would you like to mark?", playerSymbols[currentPlayer], subboardLoc.name);
+			undoState = getInput(prompt, &cellLoc);
 		}
-		board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col] = currentPlayer;
-		switch (checkWin(board[subboardLoc.row][subboardLoc.col], &cellLoc, wins, &subboardLoc)) {
-			case 2:
-				gameOver = 1;
-			case 1: // intentional spillover
-				printf("Player %s wins sub-board %c.\n", playerSymbols[currentPlayer], subboardLoc.name);
+		while ((board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col] != NUM_PLAYERS) && (undoState == NORMAL)) {
+			printf("Invalid choice; sub-board %c, cell %c is already marked.\n", subboardLoc.name, cellLoc.name);
+			undoState = getInput(prompt, &cellLoc);
+		}
+		if (undoState == UNDO_REQUESTED) {
+			GameState restore = backup[!currentPlayer];
+			if (restore.subboard.name == 0) {
+				printf("Can't go back.\n");
+				undoState = UNDO_FAILED;
+			} else { // perform the undo operation
+				board[restore.subboard.row][restore.subboard.col][restore.cell.row][restore.cell.col] = NUM_PLAYERS; // clear the space
+				initGameState(&(backup[currentPlayer])); // invalidate the backup for this turn
+			}
+		} else { // process the user input
+			board[subboardLoc.row][subboardLoc.col][cellLoc.row][cellLoc.col] = currentPlayer;
+			backup[currentPlayer].subboard = subboardLoc;
+			backup[currentPlayer].cell = cellLoc;
+			switch (checkWin(board[subboardLoc.row][subboardLoc.col], &cellLoc, wins, &subboardLoc)) {
+				case 2:
+					gameOver = 1;
+				case 1: // intentional spillover
+					printf("Player %s wins sub-board %c.\n", playerSymbols[currentPlayer], subboardLoc.name);
+			}
 		}
 		for (int bigRow = 0; bigRow < BOARD_SIZE; bigRow++) { // print the board
 			for (int smallRow = 0; smallRow < BOARD_SIZE; smallRow++) {
@@ -75,18 +97,24 @@ int main(void) {
 				printf("      ||       ||      \n");
 			}
 		}
-		if (gameOver) {
-			printf("Player %s wins!\n", playerSymbols[currentPlayer]);
-		} else if (checkStalemate(board, wins, &subboardLoc)) {
-			gameOver = 1;
-			printf("Stalemate! All spaces on the board have been filled, but nobody won.\n");
-		} else {
-			currentPlayer = !currentPlayer;
-			if (!isSubboardFull(board[cellLoc.row][cellLoc.col])) {
+		if (undoState != UNDO_FAILED) {
+			if (gameOver) {
+				printf("Player %s wins!\n", playerSymbols[currentPlayer]);
+			} else if (undoState == UNDO_REQUESTED) {
+				if (backup[!currentPlayer].didChooseSubboard) {
+					subboardLoc.name = 0;
+				} else {
+					subboardLoc = backup[!currentPlayer].subboard;
+				}
+			} else if (checkStalemate(board, wins, &subboardLoc)) {
+				gameOver = 1;
+				printf("Stalemate! All spaces on the board have been filled, but nobody won.\n");
+			} else if (!isSubboardFull(board[cellLoc.row][cellLoc.col])) {
 				subboardLoc = cellLoc;
 			} else {
 				subboardLoc.name = 0;
 			}
+			currentPlayer = !currentPlayer;
 		}
 	}
 	return 0;

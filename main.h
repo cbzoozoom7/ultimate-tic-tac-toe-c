@@ -10,5 +10,10 @@
 	#include "defs.h"
 	#include "functions.h"
 	#define PROMPT_LENGTH 70
+	typedef enum {
+		NORMAL = 0,
+		UNDO_REQUESTED = 1,
+		UNDO_FAILED = -1
+	} UndoStatus;
 	
 #endif

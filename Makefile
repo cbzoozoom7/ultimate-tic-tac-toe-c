@@ -9,4 +9,4 @@ main.o: main.c main.h defs.h
 functions.o: functions.c functions.h defs.h
 	gcc -c -Wall -Werror functions.c
 clean:
-	rm main.o functions.o
+	rm main.o functions.o a.out

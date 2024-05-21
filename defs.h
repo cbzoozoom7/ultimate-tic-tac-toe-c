@@ -8,10 +8,15 @@
 	#define CELL_LENGTH 11 // = length of (color + player symbol + color reset + null terminator)
 	#define NUM_PLAYERS 2
 	typedef struct { // stores the indices and name of a location on the board
+		signed char row;
+		signed char col;
 		char name;
-		int row;
-		int col;
 	} BoardLocation;
 	typedef signed char Subboard[BOARD_SIZE][BOARD_SIZE];
+	typedef struct {
+		BoardLocation subboard;
+		BoardLocation cell;
+		char didChooseSubboard; // bool that the specifies whether the play could choose the subboard
+	} GameState;
 
 #endif

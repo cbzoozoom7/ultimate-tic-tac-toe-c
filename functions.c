@@ -3,23 +3,27 @@
 // copyright Christopher Bowman 2024
 // created Fri 3 May 2024
 #include "functions.h"
-void getInput(const char *prompt, BoardLocation *loc) { // prompts the user with the given prompt until they provide a valid response (1–9), & writes the input onto the provided BoardLocation
-	char isBadInput = 1; // bool
+char getInput(const char *prompt, BoardLocation *loc) { // prompts the user with the given prompt until they provide a valid response (1–9), & writes the input onto the provided BoardLocation
+	char isGoodInput = 0; // bool
 	char buf[CELL_LENGTH];
-	while (isBadInput) {
+	while (!isGoodInput) {
 		printf("%s ", prompt);
-		fgets(buf, CELL_LENGTH, stdin);
-		if (strlen(buf) == 2) {
-			if (buf[0] > '9' || buf[0] < '1') {
-				printf("Invalid input. Please enter a number 1–9.\n");
+		if (fgets(buf, CELL_LENGTH, stdin)) {
+			if ((strlen(buf) < 3) && (buf[0] >= '1' && buf[0] <= '9')) {
+				isGoodInput = 1;
+				loc->name = buf[0];
+				loc->row = (loc->name - '0' - 1) / BOARD_SIZE;
+				loc->col = (loc->name - '0' - 1) % BOARD_SIZE;
+			} else if (strcmp(buf, "undo\n") == 0) {
+				isGoodInput = 2;
 			} else {
-				isBadInput = 0;
+				printf("Invalid input. Please enter a number 1–9. undo to go back a turn.\n");
 			}
+		} else {
+			printf("Invalid input. Please enter a number 1–9. Undo to go back a turn.\n");
 		}
 	}
-	loc->name = buf[0];
-	loc->row = (loc->name - '0' - 1) / BOARD_SIZE;
-	loc->col = (loc->name - '0' - 1) % BOARD_SIZE;
+	return --isGoodInput;
 }
 char isSubboardFull(const Subboard subboard) { // returns bool
 	char isFull = 1;
@@ -49,12 +53,13 @@ char checkWin(Subboard s, const BoardLocation *cell, Subboard overall, const Boa
 		i = 1;
 		char forwardWin = 1;
 		char backwardWin = 1;
+		win = 1;
 		while (i < BOARD_SIZE && win) {
 			forwardWin = forwardWin && (player == s[(cell->row + i) % BOARD_SIZE][(cell->col + i) % BOARD_SIZE]);
 			backwardWin = backwardWin && (player == s[(cell->row + i) % BOARD_SIZE][(cell->col - i + BOARD_SIZE) % BOARD_SIZE]);
 			i++;
+			win = forwardWin || backwardWin;
 		}
-		win = forwardWin || backwardWin;
 	}
 	if (win) {
 		// fill subboard with player
@@ -74,14 +79,14 @@ char checkWin(Subboard s, const BoardLocation *cell, Subboard overall, const Boa
 char checkStalemate(const Subboard board[BOARD_SIZE][BOARD_SIZE], Subboard overall, const BoardLocation *subboard) {
 	char stalemate = isSubboardFull(board[subboard->row][subboard->col]); // bool
 	if (stalemate) {
-		if (overall[subboard->row][subboard->col] == BOARD_SIZE - 1) { // if that sub-board is marked empty... (This check is used to avoid overwriting a win on the overall board)
+		if (overall[subboard->row][subboard->col] == NUM_PLAYERS) { // if that sub-board is marked empty... (This check is used to avoid overwriting a win on the overall board)
 			overall[subboard->row][subboard->col] = -1; // mark that sub-board full
 		}
 		int row = 0;
 		while (stalemate && row < BOARD_SIZE) {
 			int col = 0;
 			while (stalemate && col < BOARD_SIZE) {
-				if (overall[row][col] == BOARD_SIZE - 1) { // check for empty space in overall board
+				if (overall[row][col] == NUM_PLAYERS) { // check for empty space in overall board
 					stalemate = 0;
 				}
 				col++;
@@ -90,4 +95,9 @@ char checkStalemate(const Subboard board[BOARD_SIZE][BOARD_SIZE], Subboard overa
 		}
 	}
 	return stalemate;
+}
+void initGameState(GameState *gs) {
+	gs->subboard.name = 0;
+	gs->cell.name = 0;
+	gs->didChooseSubboard = 1;
 }
